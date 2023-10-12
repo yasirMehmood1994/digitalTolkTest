@@ -231,7 +231,7 @@ class BookingController extends Controller
             $job_data = $this->bookingRepository->jobToData($job);
             $this->bookingRepository->sendNotificationTranslator($job, $job_data, '*');
 
-            return response(['success' => 'Push sent']);
+            return response(['success' => 'Push sent'], 200);
         } catch (\Exception $e) {
             return response([
                 'message' => $e->getMessage()
@@ -242,19 +242,16 @@ class BookingController extends Controller
     /**
      * Sends SMS to Translator
      * @param Request $request
-     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
+     * @return \Illuminate\Http\Response
      */
     public function resendSMSNotifications(Request $request)
     {
-        $data = $request->all();
-        $job = $this->bookingRepository->find($data['jobid']);
-        $job_data = $this->bookingRepository->jobToData($job);
-
         try {
+            $job = $this->bookingRepository->findOrFail(request()->jobid);
             $this->bookingRepository->sendSMSNotificationToTranslator($job);
-            return response(['success' => 'SMS sent']);
+            return response(['success' => 'SMS sent'], 200);
         } catch (\Exception $e) {
-            return response(['success' => $e->getMessage()]);
+            return response(['meesage' => $e->getMessage()], 500);
         }
     }
 
