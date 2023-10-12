@@ -132,16 +132,11 @@ class BookingController extends Controller
 
     /**
      * @param Request $request
-     * @return mixed
+     * @return \Illuminate\Http\Response
      */
     public function endJob(Request $request)
     {
-        $data = $request->all();
-
-        $response = $this->bookingRepository->endJob($data);
-
-        return response($response);
-
+        return response($this->bookingRepository->endJob($request->all()));
     }
 
     public function customerNotCall(Request $request)
