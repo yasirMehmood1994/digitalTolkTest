@@ -68,16 +68,15 @@ class BookingController extends Controller
     }
 
     /**
+     * updating a record
      * @param $id
      * @param Request $request
      * @return mixed
      */
     public function update($id, Request $request)
     {
-        $data = $request->all();
-        $cuser = $request->__authenticatedUser;
-        $response = $this->bookingRepository->updateJob($id, array_except($data, ['_token', 'submit']), $cuser);
-
+        $data = $request->except(['_token', 'submit']);
+        $response = $this->bookingRepository->updateJob($id, $data, $request->__authenticatedUser);
         return response($response);
     }
 
