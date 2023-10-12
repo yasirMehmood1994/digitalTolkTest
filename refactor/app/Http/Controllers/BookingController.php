@@ -46,13 +46,13 @@ class BookingController extends Controller
     }
 
     /**
+     * get a single job details
      * @param $id
      * @return mixed
      */
     public function show($id)
     {
-        $job = $this->bookingRepository->with('translatorJobRel.user')->find($id);
-
+        $job = $this->bookingRepository->with('translatorJobRel.user')->findorFail($id);
         return response($job);
     }
 
