@@ -112,14 +112,13 @@ class BookingController extends Controller
         return response($this->bookingRepository->acceptJob($request->all(), $request->__authenticatedUser));
     }
 
+    /**
+     * @param Request $request
+     * @return \Illuminate\Http\Response
+     */
     public function acceptJobWithId(Request $request)
     {
-        $data = $request->get('job_id');
-        $user = $request->__authenticatedUser;
-
-        $response = $this->bookingRepository->acceptJobWithId($data, $user);
-
-        return response($response);
+        return response($this->bookingRepository->acceptJobWithId(request()->only('job_id'), $request->__authenticatedUser));
     }
 
     /**
