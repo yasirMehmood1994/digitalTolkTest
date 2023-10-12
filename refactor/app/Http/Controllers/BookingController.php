@@ -150,78 +150,65 @@ class BookingController extends Controller
 
     /**
      * @param Request $request
-     * @return mixed
+     * @return \Illuminate\Http\Response
      */
     public function getPotentialJobs(Request $request)
     {
-        $data = $request->all();
-        $user = $request->__authenticatedUser;
-
-        $response = $this->bookingRepository->getPotentialJobs($user);
-
-        return response($response);
+        return response($this->bookingRepository->getPotentialJobs($request->__authenticatedUser));
     }
 
+    /**
+     * Updating distance
+     * @param Request $request
+     * @return \Illuminate\Http\Response
+     */
     public function distanceFeed(Request $request)
     {
-        $data = $request->all();
+        try {
+            // this part can be done in a saperate custom request where we will create a separate request for validating the data and it will be called before diving into the function
+            $request->validate([
+                'job_id' => 'required|integer', // assuming it will be an integer
+                'admincomment' => Rule::requiredIf(fn () => request()->input('flagged') && request()->flagged == 'true') // assuming that flagged is a string value not boolean
+            ]);
 
-        if (isset($data['distance']) && $data['distance'] != "") {
-            $distance = $data['distance'];
-        } else {
-            $distance = "";
-        }
-        if (isset($data['time']) && $data['time'] != "") {
-            $time = $data['time'];
-        } else {
-            $time = "";
-        }
-        if (isset($data['jobid']) && $data['jobid'] != "") {
-            $jobid = $data['jobid'];
-        }
+            // inserting or overriding values
+            $request->merge([
+                'distance' => request()->input('distance') ? request()->distance : '',
+                'time' => request()->input('time') ? request()->time : '',
+                'session_time' => request()->input('session_time') ? request()->session_time : '',
+                'flagged' => request()->input('flagged') && request()->flagged == 'true'
+                    ? 'yes' : 'no',
+                'manually_handled' => request()->input('manually_handled') && request()->manually_handled == 'true' ? 'yes' : 'no',
+                'by_admin' => request()->input('by_admin') && request()->by_admin == 'true'
+                    ? 'yes' : 'no',
+                'admincomment' => request()->input('admincomment') ? request()->admincomment : '',
+            ]);
 
-        if (isset($data['session_time']) && $data['session_time'] != "") {
-            $session = $data['session_time'];
-        } else {
-            $session = "";
+            // updating the distance based on time and distance value
+            if (request()->input('time') || request()->input('distance')) {
+                // finding distance based on job id
+                $distance = Distance::where('job_id', request()->job_id)->first();
+                if ($distance)
+                $distance->update([
+                    'distance' => request()->distance,
+                    'time' => request()->time
+                ]);
+            }
+
+            // updating job information based on a condition
+            if (in_array('yes', [request()->flagged, request()->manually_handled, request()->by_admin]) || request()->input('session_time')) {
+                $job = Job::find(request()->job_id);
+                // The optional helper function is used to safely access the object without causing errors if it is null.
+                // If object is null, the fill method will not be called.
+                optional($job)->fill(request()->only('admin_comments', 'flagged', 'session_time', 'manually_handled', 'by_admin'))->save();
+            }
+
+            return response('Record updated!');
+        } catch (\Exception $e) {
+            return response([
+                'message' => $e->getMessage()
+            ], 500);
         }
-
-        if ($data['flagged'] == 'true') {
-            if($data['admincomment'] == '') return "Please, add comment";
-            $flagged = 'yes';
-        } else {
-            $flagged = 'no';
-        }
-        
-        if ($data['manually_handled'] == 'true') {
-            $manually_handled = 'yes';
-        } else {
-            $manually_handled = 'no';
-        }
-
-        if ($data['by_admin'] == 'true') {
-            $by_admin = 'yes';
-        } else {
-            $by_admin = 'no';
-        }
-
-        if (isset($data['admincomment']) && $data['admincomment'] != "") {
-            $admincomment = $data['admincomment'];
-        } else {
-            $admincomment = "";
-        }
-        if ($time || $distance) {
-
-            $affectedRows = Distance::where('job_id', '=', $jobid)->update(array('distance' => $distance, 'time' => $time));
-        }
-
-        if ($admincomment || $session || $flagged || $manually_handled || $by_admin) {
-
-            $affectedRows1 = Job::where('id', '=', $jobid)->update(array('admin_comments' => $admincomment, 'flagged' => $flagged, 'session_time' => $session, 'manually_handled' => $manually_handled, 'by_admin' => $by_admin));
-
-        }
-
-        return response('Record updated!');
     }
 
     public function reopen(Request $request)
