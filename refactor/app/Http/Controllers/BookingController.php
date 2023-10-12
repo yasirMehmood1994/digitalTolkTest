@@ -211,22 +211,32 @@ class BookingController extends Controller
         }
     }
 
+    /**
+     * @param Request $request
+     * @return \Illuminate\Http\Response
+     */
     public function reopen(Request $request)
     {
-        $data = $request->all();
-        $response = $this->bookingRepository->reopen($data);
-
-        return response($response);
+        return response($this->bookingRepository->reopen($request->all()));
     }
 
+    /**
+     * @param Request $request
+     * @return \Illuminate\Http\Response
+     */
     public function resendNotifications(Request $request)
     {
-        $data = $request->all();
-        $job = $this->bookingRepository->find($data['jobid']);
-        $job_data = $this->bookingRepository->jobToData($job);
-        $this->bookingRepository->sendNotificationTranslator($job, $job_data, '*');
+        try {
+            $job = $this->bookingRepository->findOrFail(request()->jobid);
+            $job_data = $this->bookingRepository->jobToData($job);
+            $this->bookingRepository->sendNotificationTranslator($job, $job_data, '*');
 
-        return response(['success' => 'Push sent']);
+            return response(['success' => 'Push sent']);
+        } catch (\Exception $e) {
+            return response([
+                'message' => $e->getMessage()
+            ], 500);
+        }
     }
 
     /**
