@@ -97,13 +97,10 @@ class BookingController extends Controller
      */
     public function getHistory(Request $request)
     {
-        if($user_id = $request->get('user_id')) {
-
-            $response = $this->bookingRepository->getUsersJobsHistory($user_id, $request);
-            return response($response);
-        }
-
-        return null;
+        $response = request()->input('user_id')
+            ? $this->bookingRepository->getUsersJobsHistory(request()->user_id, $request)
+            : [];
+        return response($response);
     }
 
     /**
