@@ -123,16 +123,11 @@ class BookingController extends Controller
 
     /**
      * @param Request $request
-     * @return mixed
+     * @return \Illuminate\Http\Response
      */
     public function cancelJob(Request $request)
     {
-        $data = $request->all();
-        $user = $request->__authenticatedUser;
-
-        $response = $this->bookingRepository->cancelJobAjax($data, $user);
-
-        return response($response);
+        return response($this->bookingRepository->cancelJobAjax($request->all(), $request->__authenticatedUser));
     }
 
     /**
