@@ -81,16 +81,13 @@ class BookingController extends Controller
     }
 
     /**
+     * updating information of job
      * @param Request $request
      * @return mixed
      */
     public function immediateJobEmail(Request $request)
     {
-        $adminSenderEmail = config('app.adminemail');
-        $data = $request->all();
-
-        $response = $this->bookingRepository->storeJobEmail($data);
-
+        $response = $this->bookingRepository->storeJobEmail($request->all());
         return response($response);
     }
 
