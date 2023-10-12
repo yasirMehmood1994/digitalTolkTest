@@ -139,14 +139,13 @@ class BookingController extends Controller
         return response($this->bookingRepository->endJob($request->all()));
     }
 
+    /**
+     * @param Request $request
+     * @return \Illuminate\Http\Response
+     */
     public function customerNotCall(Request $request)
     {
-        $data = $request->all();
-
-        $response = $this->bookingRepository->customerNotCall($data);
-
-        return response($response);
-
+        return response($this->bookingRepository->customerNotCall($request->all()));
     }
 
     /**
