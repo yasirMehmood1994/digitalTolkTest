@@ -109,12 +109,7 @@ class BookingController extends Controller
      */
     public function acceptJob(Request $request)
     {
-        $data = $request->all();
-        $user = $request->__authenticatedUser;
-
-        $response = $this->bookingRepository->acceptJob($data, $user);
-
-        return response($response);
+        return response($this->bookingRepository->acceptJob($request->all(), $request->__authenticatedUser));
     }
 
     public function acceptJobWithId(Request $request)
