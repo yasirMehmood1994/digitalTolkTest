@@ -57,17 +57,14 @@ class BookingController extends Controller
     }
 
     /**
+     * Insert a new record
      * @param Request $request
      * @return mixed
      */
     public function store(Request $request)
     {
-        $data = $request->all();
-
-        $response = $this->bookingRepository->store($request->__authenticatedUser, $data);
-
+        $response = $this->bookingRepository->store($request->__authenticatedUser, $request->validated());
         return response($response);
-
     }
 
     /**
