@@ -1,5 +1,6 @@
 <!-- Please go through the notes -->
 Note:
+    * I have created a pull request which can be seen on github through which you can easily verify the changes if needed please let me know I'll merge it
     * I have modified all the code of the controller
     * Some of the code from to repository is updated as well i.e.
         1. All the code in the repository related to index method of the controller is refactored
