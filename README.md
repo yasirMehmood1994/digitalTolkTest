@@ -1,3 +1,10 @@
+<!-- Please go through the notes -->
+Note:
+    * I have modified all the code of the controller
+    * Some of the code from to repository is updated as well i.e.
+        1. All the code in the repository related to index method of the controller is refactored
+        2. Some part of the code in the repository related to store method is also refactored
+    * Couldn't able to all the code due to lack of time but from the code you can get all your possible answers like coding style, mentality etc
 <!-- Amaizing part -->
 Amazing part of the code is that its using repository to maintain the structure of the code so that it should be more readable and easy to understand and an advance way of doing it rather then writing all the logics in the controller
 
